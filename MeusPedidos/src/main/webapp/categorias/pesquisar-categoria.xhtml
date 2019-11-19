@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/template/layout-padrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<ui:define name="titulo">Pesquisa Categoria</ui:define>
+	
+	<ui:define name="corpo">
+
+
+		<f:metadata>
+
+			<f:viewAction action="#{pesquisaCategoriaBean.inicializar}" />
+
+		</f:metadata>
+
+		<h1 style="color: blue" align="center">Pesquisa de categoria</h1>
+
+		<p:messages closable="true" showSummary="false" showDetail="true">
+			<p:autoUpdate />
+		</p:messages>
+
+		<h:form>
+			<p:toolbar>
+				<f:facet name="left">
+					<p:commandButton value="Pesquisar"
+						action="#{pesquisaCategoriaBean.filtroCategoria}"
+						outcome="/categorias/pesquisar-categoria" update="tabela" />
+				</f:facet>
+
+				<f:facet name="right">
+					<p:button value="Novo" outcome="/categorias/cadastro-categoria" />
+				</f:facet>
+			</p:toolbar>
+
+			<p:panelGrid columns="2" style="width:100%; margin-top:20px">
+				<h:outputText value="Descrição: " for="descricao" />
+				<p:inputText value="#{pesquisaCategoriaBean.categoria.descricao}"
+					id="descricao" size="80" maxlength="60" />
+			</p:panelGrid>
+
+
+			<p:dataTable id="tabela" value="#{pesquisaCategoriaBean.categorias}"
+				var="c" style="width:100%; margin-top:20px" rows="10"
+				paginator="true" paginatorPosition="bottom"
+				paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15"
+				emptyMessage="Nenhuma categoria encontrada">
+
+				<p:column headerText="Código" style="text-align:center; width:80px">
+					<h:outputText value="#{c.id}" />
+				</p:column>
+
+				<p:column headerText="Descrição">
+					<h:outputText value="#{c.descricao}" />
+				</p:column>
+
+
+
+				<p:column headerText="Ações" style="text-align:center; width:80px">
+
+					<p:button title="Editar" icon="ui-icon-pencil"
+						outcome="/categorias/cadastro-categoria">
+
+						<f:param name="categoria" value="#{c.id}" />
+
+					</p:button>
+
+
+					<p:commandButton title="Excluir" icon="ui-icon-trash"
+						oncomplete="PF('confirmacaoExclusao').show();">
+						<f:setPropertyActionListener value="#{c}"
+							target="#{pesquisaCategoriaBean.categoria}" />
+
+					</p:commandButton>
+
+				</p:column>
+
+			</p:dataTable>
+
+			<p:confirmDialog header="Exclusão de categoria"
+				message="Tem certeza que deseja excluir essa categoria ?"
+				widgetVar="confirmacaoExclusao">
+				<p:commandButton value="Sim" icon="ui-icon-check" iconPos="right"
+					action="#{pesquisaCategoriaBean.excluirBD}" update="tabela"
+					oncomplete="PF('confirmacaoExclusao').hide(); return false;" />
+
+				<p:button value="Não"
+					onclick="PF('confirmacaoExclusao').hide(); return false;"
+					icon="ui-icon-close" iconPos="right" />
+			</p:confirmDialog>
+
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/template/layout-padrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<ui:define name="corpo">
+
+		<h:form id="formulario">
+			<h1 style="color: blue; text-align: center">Cadastro de Produto</h1>
+
+			<p:messages closable="true" showSummary="false" showDetail="true">
+				<p:autoUpdate />
+			</p:messages>
+
+			<f:metadata>
+
+				<o:viewParam name="produto" value="#{cadastroProdutoBean.produto}" />
+				<f:viewAction action="#{cadastroProdutoBean.inicializar}" />
+
+			</f:metadata>
+
+			<p:toolbar>
+				<f:facet name="left">
+					<p:button value="Novo" outcome="/produto/cadastro-produto" />
+					<p:commandButton value="Salvar"
+						action="#{cadastroProdutoBean.salvarBD}"
+						outcome="/produto/cadastro-produto" update="formulario" />
+				</f:facet>
+
+				<f:facet name="right">
+					<p:button value="Pesquisa" outcome="/produto/pesquisar-produto" />
+				</f:facet>
+			</p:toolbar>
+
+			<p:panelGrid columns="2" style="width:100%; margin-top: 20px">
+
+				<p:outputLabel value="Nome: " for="nome" />
+				<p:inputText id="nome" value="#{cadastroProdutoBean.produto.nome}"
+					required="true" size="80" />
+
+				<p:outputLabel value="Categoria: " for="categoria"/>
+				<p:selectOneMenu id="categoria" value="#{cadastroProdutoBean.produto.categoria}" required="true">
+					<f:selectItem itemLabel="Selecione uma categoria" noSelectionOption="true" />
+					<f:selectItems value="#{cadastroProdutoBean.listaCategoria}"
+						var="c" itemLabel="#{c.descricao}" itemValue="#{c}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel value="Valor: " for="valor" />
+				<p:inputNumber id="valor"
+					value="#{cadastroProdutoBean.produto.valor}"/>
+
+				<p:outputLabel value="Estoque: " for="estoque" />
+				<p:inputNumber id="estoque" value="#{cadastroProdutoBean.produto.estoque}" />
+
+			</p:panelGrid>
+
+		</h:form>
+	</ui:define>
+
+</ui:composition>

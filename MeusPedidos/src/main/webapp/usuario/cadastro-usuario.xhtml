@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/template/layout-padrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<ui:define name="corpo">
+
+
+		<h:form id="formulario">
+			<h1 style="color: blue; text-align: center">Cadastro de usuário</h1>
+
+			<p:messages closable="true" showSummary="false" showDetail="true">
+				<p:autoUpdate />
+			</p:messages>
+
+			<f:metadata>
+
+				<o:viewParam name="usuario" value="#{cadastroUsuarioBean.usuario}" />
+				<f:viewAction action="#{cadastroUsuarioBean.inicializar}" />
+
+			</f:metadata>
+
+
+			<p:toolbar>
+				<f:facet name="left">
+					<p:button value="Novo" outcome="/usuario/cadastro-usuario" />
+					<p:commandButton value="Salvar"
+						action="#{cadastroUsuarioBean.salvarBD}"
+						outcome="/usuario/cadastro-usuario" update="formulario" />
+				</f:facet>
+
+				<f:facet name="right">
+					<p:button value="Pesquisa" outcome="/usuario/pesquisar-usuario" />
+				</f:facet>
+			</p:toolbar>
+
+			<p:panelGrid columns="2" style="width:100%; margin-top: 20px">
+				<p:outputLabel value="Nome: " for="nome" />
+				<p:inputText id="nome" value="#{cadastroUsuarioBean.usuario.nome}"
+					required="true" size="80" />
+
+				<p:outputLabel value="Email: " for="email" />
+				<p:inputText id="email" value="#{cadastroUsuarioBean.usuario.email}"
+					required="true" size="60" />
+
+				<p:outputLabel value="Senha: " for="senha" />
+				<p:password id="senha" value="#{cadastroUsuarioBean.usuario.senha}"
+					required="true" />
+
+				<p:outputLabel value="Confirmação de senha " for="confirmacao" />
+				<p:password id="confirmacao"
+					value="#{cadastroUsuarioBean.usuario.confirmacao}" required="true" />
+
+				<p:outputLabel value="Ativo: " for="ativo" />
+				<p:selectBooleanCheckbox id="ativo"
+					value="#{cadastroUsuarioBean.usuario.ativo}" />
+
+			</p:panelGrid>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

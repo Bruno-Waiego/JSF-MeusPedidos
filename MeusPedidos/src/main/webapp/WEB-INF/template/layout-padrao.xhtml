@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+	<title><ui:insert name="titulo">Sistema de pedidos de venda</ui:insert></title>
+
+	<h:outputStylesheet library="css" name="sistema.css" />
+</h:head>
+
+<h:body>
+
+	<header>
+		<div class="logo">
+			<h:graphicImage library="imagens" alt="Logo do sistema"
+				name="logo-transparente.png" />
+		</div>
+		<div class="menu">
+			<span class="usuario-logado">Olá #{loginBean.usuarioLogado}</span>
+
+			<h:form>
+				<p:menubar styleClass="menubar">
+					<p:submenu label="Cadastros">
+						<p:menuitem value="Clientes" outcome="/cliente/cadastro-cliente" />
+						<p:menuitem value="Categorias" outcome="/categorias/cadastro-categoria" />
+						<p:menuitem value="Produtos" outcome="/produto/cadastro-produto" />
+						<p:menuitem value="Usuários" outcome="/usuario/cadastro-usuario" />
+					</p:submenu>
+
+					<p:submenu label="Pedidos">
+						<p:menuitem value="Novo" outcome="/pedidos/cadastro-pedidos" />
+					</p:submenu>
+					<p:menuitem value="Sair" action="#{loginBean.logout}" />
+				</p:menubar>
+
+			</h:form>
+		</div>
+	</header>
+
+	<div id="conteudo">
+
+		<ui:insert name="corpo" />
+
+	</div>
+
+</h:body>
+
+</html>

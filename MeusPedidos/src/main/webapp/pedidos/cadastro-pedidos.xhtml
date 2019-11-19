@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/template/layout-padrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<ui:define name="titulo">Cadastro Pedidos</ui:define>
+
+	<ui:define name="corpo">
+
+		<h:form id="formulario">
+
+			<f:metadata>
+				<o:viewParam name="pedido" value="#{cadastroPedidoBean.pedido}" />
+				<f:viewAction action="#{cadastroPedidoBean.inicializar}" />
+			</f:metadata>
+
+			<h1 style="color: blue; text-align: center">Cadastro de Pedidos</h1>
+
+			<p:messages closable="true" showSummary="false" showDetail="true">
+				<p:autoUpdate />
+			</p:messages>
+
+			<p:toolbar>
+				<f:facet name="left">
+					<p:button value="Novo" outcome="/pedidos/cadastro-pedidos" />
+
+					<p:commandButton value="Salvar" update="formulario"
+						outcome="/pedidos/cadastro-pedidos"
+						action="#{cadastroPedidoBean.salvarBD}" />
+
+				</f:facet>
+
+				<f:facet name="right">
+					<p:commandButton value="Emitir" disabled="#{cadastroPedidoBean.ativo}" update="status"
+						action="#{cadastroPedidoBean.statusEmitir}" />
+						
+					<p:commandButton value="Cancelar"
+						action="#{cadastroPedidoBean.statusCancelado}" update="status" 
+						disabled="#{cadastroPedidoBean.ativo}" />
+				</f:facet>
+			</p:toolbar>
+
+			<p:panelGrid columns="4" style="width:100%; margin-top: 20px;">
+
+				<p:panelGrid columns="2" style="width:100%;">
+
+					<p:outputLabel value="Número: " for="numero" />
+					<p:outputLabel id="numero" disabled="true"
+						value="#{cadastroPedidoBean.pedido.numero}" />
+
+					<p:outputLabel value="Status: " for="status" />
+					<p:outputLabel id="status"
+						value="#{cadastroPedidoBean.statusPedido}" disabled="true" />
+
+					<p:outputLabel value="Cliente:" />
+					<p:selectOneMenu value="#{cadastroPedidoBean.pedido.cliente}">
+
+
+						<f:selectItem itemLabel="Selecione um cliente"
+							noSelectionOption="true" />
+						<f:selectItems value="#{cadastroPedidoBean.listaClientes}"
+							var="lc" itemLabel="#{lc.nome}" itemValue="#{lc}" />
+
+						<p:ajax update="formulario:tabelaGrid:comboxEnderecos" />
+
+					</p:selectOneMenu>
+
+
+
+					<p:outputLabel value="Valor do frete: " for="frete" />
+					<p:inputNumber id="frete"
+						value="#{cadastroPedidoBean.pedido.valorFrete}">
+
+						<p:ajax event="blur" update="totalPedido"
+							listener="#{cadastroPedidoBean.valorTotalPedido}" />
+
+					</p:inputNumber>
+
+				</p:panelGrid>
+
+				<p:panelGrid columns="2" style="width:100%;">
+
+					<p:outputLabel value="Data criação: " for="criacao" />
+					<p:outputLabel id="criacao" disabled="true"
+						value="#{cadastroPedidoBean.pedido.dataCriacao}">
+						<f:convertDateTime pattern="dd/MM/YYYY" />
+					</p:outputLabel>
+
+					<p:outputLabel value="Forma de pagamento:" />
+					<p:selectOneMenu
+						value="#{cadastroPedidoBean.pedido.formaPagamento}">
+						<f:selectItem itemLabel="Selecione um pagamento"
+							noSelectionOption="true" />
+						<f:selectItems value="#{cadastroPedidoBean.formas}" var="formas"
+							itemLabel="#{formas}" itemValue="#{formas}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Subtotal: " for="subtotal" />
+					<p:outputLabel id="subtotal" disabled="true"
+						value="#{cadastroPedidoBean.somaSub}" />
+
+					<p:outputLabel value="Total pedido: " for="totalPedido" />
+					<p:outputLabel id="totalPedido" disabled="true"
+						value="#{cadastroPedidoBean.pedido.valorTotal}" />
+				</p:panelGrid>
+
+			</p:panelGrid>
+
+			<p:tabView id="tabelaGrid" style="width:100%; margin-top:20px">
+				<p:tab title="Itens">
+
+
+					<p:panelGrid columns="4" cellpadding="10" style="width:100%;">
+
+						<p:outputLabel value="Produto: " />
+						<p:selectOneMenu value="#{cadastroPedidoBean.produto}">
+
+							<p:ajax event="blur" update="valorUnitario estoque valorTotal"
+								listener="#{cadastroPedidoBean.popularProdutoCampos}" />
+
+							<f:selectItem itemLabel="Selecione um produto"
+								noSelectionOption="true" />
+							<f:selectItems value="#{cadastroPedidoBean.listaProdutos}"
+								var="lp" itemLabel="#{lp.nome}" itemValue="#{lp}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel value="Quantidade: " for="quantidade" />
+						<p:inputNumber id="quantidade"
+							value="#{cadastroPedidoBean.itemPedido.quantidade}">
+							<p:ajax event="blur" update="valorTotal"
+								listener="#{cadastroPedidoBean.adicionarValorTotal}" />
+						</p:inputNumber>
+
+						<p:outputLabel value="Valor unitário: " for="valorUnitario" />
+						<p:outputLabel id="valorUnitario" disabled="true"
+							value="#{cadastroPedidoBean.itemPedido.valorUnitario}" />
+
+						<p:outputLabel value="Valor Total " for="valorTotal" />
+						<p:outputLabel id="valorTotal" disabled="true"
+							value="#{cadastroPedidoBean.valorTotalCampo}" />
+
+						<p:outputLabel value="Estoque: " for="estoque" />
+						<p:outputLabel id="estoque" disabled="true"
+							value="#{cadastroPedidoBean.produto.estoque}" />
+
+						<p:commandButton value="Adicionar" style="float: right;"
+							update="tabela tabelaGrid formulario:subtotal formulario:totalPedido"
+							action="#{cadastroPedidoBean.adicionarProduto}" />
+					</p:panelGrid>
+
+
+					<p:dataTable id="tabela" style="width:100%; margin-top:20px"
+						value="#{cadastroPedidoBean.listaAdicionarProdutos}" var="l"
+						rows="10" paginator="true" paginatorPosition="bottom"
+						paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="5,10,15"
+						emptyMessage="Nenhum produto encontrado">
+
+						<p:column headerText="Produto">
+							<h:outputText value="#{l.produto.nome}" />
+						</p:column>
+
+						<p:column headerText="Valor unitário">
+							<h:outputText value="#{l.valorUnitario}" />
+						</p:column>
+
+						<p:column headerText="Quantidade">
+							<h:outputText value="#{l.quantidade}" />
+						</p:column>
+
+						<p:column headerText="Valor total">
+							<h:outputText value="#{l.valorTotal}" />
+						</p:column>
+
+						<p:column headerText="Ações" style="text-align:center; width:80px">
+
+							<p:commandButton title="Excluir" icon="ui-icon-trash"
+								update="tabela formulario:subtotal formulario:totalPedido"
+								action="#{cadastroPedidoBean.atualizarValoresExcluir}">
+								<f:setPropertyActionListener value="#{l}"
+									target="#{cadastroPedidoBean.itemPedido}" />
+
+							</p:commandButton>
+						</p:column>
+
+					</p:dataTable>
+				</p:tab>
+
+				<p:tab title="Data de entrega">
+
+					<p:outputLabel value="Endereço: " />
+					<p:selectOneMenu id="comboxEnderecos"
+						value="#{cadastroPedidoBean.pedido.enderecoEntrega}">
+
+						<p:ajax update="dadosEndereco" />
+
+						<f:selectItem itemLabel="Selecione um endereço para entrega"
+							noSelectionOption="true" />
+						<f:selectItems
+							value="#{cadastroPedidoBean.pedido.cliente.enderecos}" var="e"
+							itemLabel="#{e.logradouro}" itemValue="#{e}" />
+					</p:selectOneMenu>
+
+					<h:panelGrid id="dadosEndereco" columns="4" cellpadding="10">
+
+						<p:outputLabel value="Número: " for="numero" />
+						<p:outputLabel id="numero"
+							value="#{cadastroPedidoBean.pedido.enderecoEntrega.numero}" />
+
+						<p:outputLabel value="CEP: " for="cep" />
+						<p:outputLabel id="cep"
+							value="#{cadastroPedidoBean.pedido.enderecoEntrega.cep}" />
+
+						<p:outputLabel value="Complemento: " for="complemento" />
+						<p:outputLabel id="complemento"
+							value="#{cadastroPedidoBean.pedido.enderecoEntrega.complemento}" />
+
+						<p:outputLabel value="Cidade: " for="cidade" />
+						<p:outputLabel id="cidade"
+							value="#{cadastroPedidoBean.pedido.enderecoEntrega.cidade}" />
+
+						<p:outputLabel value="Estado: " for="estado" />
+						<p:outputLabel id="estado"
+							value="#{cadastroPedidoBean.pedido.enderecoEntrega.estado}" />
+
+					</h:panelGrid>
+				</p:tab>
+
+				<p:tab title="Observação">
+					<h:panelGrid columns="1" cellpadding="10">
+
+						<p:inputTextarea rows="12" cols="100" counter="display"
+							value="#{cadastroPedidoBean.pedido.observacao}" maxlength="5000"
+							counterTemplate="{0} caracteres restantes." autoResize="false" />
+						<br />
+						<h:outputText id="display" />
+
+					</h:panelGrid>
+				</p:tab>
+			</p:tabView>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
